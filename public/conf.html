@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width" />
+        <title>video conf</title>
+
+        <style>
+            html, body {
+                width: 100%;
+                height: 100%;
+                margin: 0px;
+                overflow: hidden;
+            }
+
+            video {
+                background-color: #e9e9e9;
+                width: 25%;
+                border: 5px solid black;
+                margin: 5px;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="container"></div>
+        <script src="discoveryClient.js"></script>
+
+        <script type="text/javascript" charset="utf-8">
+            var cm;
+
+document.addEventListener("DOMContentLoaded", init);
+
+function init() {
+    let container = document.getElementById('container');
+
+    navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then(function(stream) {
+        initRTC(stream);
+    }).catch(function(err) {
+        console.log(err)
+        initRTC(false);
+    });
+
+    function findOrCreateVideo(id) {
+        var v = document.getElementById(id);
+        if (v === null) {
+            v = document.createElement('video');
+            v.setAttribute('id', id);
+            v.setAttribute('class', 'item');
+            container.appendChild(v);
+        }
+        return v;
+    }
+
+    function initRTC(stream) {
+        var video = findOrCreateVideo('own');
+        if (stream) {
+            video.src = window.URL.createObjectURL(stream)
+            video.play()
+        }
+
+        var roomId = location.hash || 'default';
+
+        cm = new discoveryClient.ConnectionManager(undefined, roomId, function (peer) {
+            peer.on('connect', function () {
+                console.log('connect');
+                findOrCreateVideo(peer._id);
+            });
+            peer.on('stream', function (stuff) {
+                console.log('stream');
+                var v = findOrCreateVideo(peer._id);
+                v.src = window.URL.createObjectURL(stuff);
+                v.play();
+            });
+            peer.on('close', function () {
+                console.log('close');
+                var v = document.getElementById(peer._id);
+                if (v !== null) {
+                    container.removeChild(v);
+                }
+            });
+        }, undefined, stream);
+        cm.connect();
+    }
+}
+</script>
+</body>
+</html>

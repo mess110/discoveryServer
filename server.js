@@ -14,7 +14,6 @@ app.get('/meta.json', function (req, res) {
 });
 
 io.on('connection', function (socket) {
-  // The newly connected socket is the signer
   for (let s of sockets) {
     s.emit('addPeer', { initiator: s.id, signer: socket.id, signBy: 'initiator' });
   }
@@ -36,7 +35,7 @@ io.on('connection', function (socket) {
     if (data.signBy === 'signer') {
       target.emit('addPeer', data);
     } else {
-      target.emit('establish', data);
+      target.emit('seal', data);
     }
   });
 
@@ -50,6 +49,6 @@ io.on('connection', function (socket) {
   });
 });
 
-PORT = 8421;
+let PORT = process.env.DS_PORT || 1337;
 console.log("Listening on port: " + PORT);
 server.listen(PORT);

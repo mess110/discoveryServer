@@ -3,9 +3,13 @@ let io = require('socket.io-client');
 let SimplePeer = require('simple-peer');
 
 class ConnectionManager {
-  constructor(url, roomId) {
+  // url - of the discovery server
+  // iceServers - [ { url: 'stun:stun.l.google.com:19302' } ]
+  constructor(url, roomId, iceServers, stream = false) {
     this.url = url;
     this.roomId = roomId;
+    this.stream = stream;
+    this.iceServers = iceServers;
     this.peers = [];
   }
 
@@ -29,11 +33,21 @@ class ConnectionManager {
       let other = initiator ? 'signer' : 'initiator';
       console.info('Add new peer ' + data[other]);
 
-      var peer = new SimplePeer({ initiator: initiator, trickle: false });
+      var peer = new SimplePeer({
+        initiator: initiator,
+        config: { iceServers: cm.iceServers },
+        trickle: false,
+        stream: cm.stream
+      });
       peer.cmKey = [data.initiator, data.signer].sort().join();
 
       peer.on('signal', function (signal) {
-        socket.emit('sign', { initiator: data.initiator, signer: data.signer, signal: signal, signBy: other });
+        socket.emit('sign', {
+          initiator: data.initiator,
+          signer: data.signer,
+          signal: signal,
+          signBy: other
+        });
       });
 
       peer.on('connect', function () {
@@ -41,6 +55,10 @@ class ConnectionManager {
       });
 
       peer.on('data', function (stuff) {
+        console.log('received data: ' + stuff);
+      });
+
+      peer.on('stream', function (stuff) {
         console.log('received data: ' + stuff);
       });
 
@@ -54,7 +72,7 @@ class ConnectionManager {
       }
     });
 
-    socket.on('establish', function (data) {
+    socket.on('seal', function (data) {
       for (let peer of cm.peers) {
         let cmKey = [data.initiator, data.signer].sort().join();
         if (peer.cmKey === cmKey) {

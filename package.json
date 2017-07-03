@@ -1,0 +1,22 @@
+{
+  "name": "discovery-server",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node server.js",
+    "server": "node server.js",
+    "browserify": "./node_modules/.bin/browserify index.js --standalone discoveryClient > public/discoveryClient.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.15.3",
+    "simple-peer": "^8.1.1",
+    "socket.io": "^2.0.3"
+  },
+  "devDependencies": {
+    "browserify": "^14.4.0"
+  }
+}

@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="en">
+    <head>
+    </head>
+    <body>
+        <h1>Hello World!</h1>
+        <div id="future"></div>
+        <script src="/discoveryClient.js"></script>
+        <script>
+            var roomId = 'hello';
+            var cm = new discoveryClient.ConnectionManager(undefined, roomId);
+            cm.connect();
+        </script>
+    </body>
+</html>

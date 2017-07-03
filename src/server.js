@@ -16,7 +16,8 @@ app.get('/rooms.json', function (req, res) {
 io.on('connection', function (socket) {
 
   socket.on('joinRoom', function (data) {
-    for (let s of nurse.getSockets(data.roomId)) {
+    let allRoomSockets = nurse.getSockets(data.roomId);
+    for (let s of allRoomSockets) {
       s.emit('addPeer', {
         initiator: s.id,
         signer: socket.id,

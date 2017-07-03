@@ -2,39 +2,11 @@ var express = require('express');
 var app = express();
 var server = require('http').createServer(app);
 var io = require('socket.io')(server);
-var packageJson = require('./package.json');
-
-class Nurse {
-  constructor () {
-    this.rooms = {}
-  }
-
-  getSockets (roomId) {
-    this.default(roomId);
-    return this.rooms[roomId];
-  }
-
-  addSocket (socket, roomId) {
-    this.default(roomId);
-    this.rooms.push(socket)
-  }
-
-  default (roomId) {
-    if (this.rooms[roomId] === undefined) {
-      this.rooms[roomId] = []
-    }
-  }
-
-  toJson () {
-    return {};
-  }
-}
-
-var rooms = {};
-var sockets = [];
+let packageJson = require('../package.json');
+let Nurse = require('./Nurse');
 var nurse = new Nurse();
 
-app.use(express.static(__dirname + '/public'));
+app.use(express.static(__dirname + '/../public'));
 
 app.get('/meta.json', function (req, res) {
   res.setHeader('Content-Type', 'application/json');
@@ -44,7 +16,7 @@ app.get('/meta.json', function (req, res) {
 io.on('connection', function (socket) {
 
   socket.on('joinRoom', function (data) {
-    for (let s of sockets) {
+    for (let s of nurse.getSockets(data.roomId)) {
       s.emit('addPeer', {
         initiator: s.id,
         signer: socket.id,
@@ -52,12 +24,12 @@ io.on('connection', function (socket) {
         roomId: data.roomId
       });
     }
-    sockets.push(socket);
+    nurse.addSocket(socket, data.roomId);
   });
 
   socket.on('sign', function (data) {
     var target = undefined;
-    for (let s of sockets) {
+    for (let s of nurse.getSockets(data.roomId)) {
       if (s.id === data[data.signBy]) {
         target = s;
       }
@@ -76,11 +48,11 @@ io.on('connection', function (socket) {
   });
 
   socket.on('disconnect', function () {
-    var oldId = socket.id;
-    var index = sockets.indexOf(socket);
-    sockets.splice(index, 1);
-    for (let s of sockets) {
-      s.emit('removePeer', { id: oldId });
+    let result = nurse.removeSocket(socket);
+    for (let roomKey of result.rooms) {
+      for (let s of nurse.getSockets(roomKey)) {
+        s.emit('removePeer', { id: result.id });
+      }
     }
   });
 });

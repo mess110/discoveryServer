@@ -3,21 +3,56 @@ var app = express();
 var server = require('http').createServer(app);
 var io = require('socket.io')(server);
 
-var rooms = [];
+class Nurse {
+  constructor () {
+    this.rooms = {}
+  }
+
+  getSockets (roomId) {
+    this.default(roomId);
+    return this.rooms[roomId];
+  }
+
+  addSocket (socket, roomId) {
+    this.default(roomId);
+    this.rooms.push(socket)
+  }
+
+  default (roomId) {
+    if (this.rooms[roomId] === undefined) {
+      this.rooms[roomId] = []
+    }
+  }
+
+  toJson () {
+    return {};
+  }
+}
+
+var rooms = {};
 var sockets = [];
+var nurse = new Nurse();
 
 app.use(express.static(__dirname + '/public'));
 
 app.get('/meta.json', function (req, res) {
-  res.setHeader('Content-Type', 'application/json')
-  res.send(JSON.stringify({}))
+  res.setHeader('Content-Type', 'application/json');
+  res.send(nurse.toJson());
 });
 
 io.on('connection', function (socket) {
-  for (let s of sockets) {
-    s.emit('addPeer', { initiator: s.id, signer: socket.id, signBy: 'initiator' });
-  }
-  sockets.push(socket);
+
+  socket.on('joinRoom', function (data) {
+    for (let s of sockets) {
+      s.emit('addPeer', {
+        initiator: s.id,
+        signer: socket.id,
+        signBy: 'initiator',
+        roomId: data.roomId
+      });
+    }
+    sockets.push(socket);
+  });
 
   socket.on('sign', function (data) {
     var target = undefined;

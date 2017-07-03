@@ -24,6 +24,7 @@ class ConnectionManager {
 
     socket.on('connect', function() {
       console.info('Connected - ' + socket.id);
+      socket.emit('joinRoom', { roomId: cm.roomId })
     });
 
     socket.on('addPeer', function (data) {
@@ -45,7 +46,8 @@ class ConnectionManager {
           initiator: data.initiator,
           signer: data.signer,
           signal: signal,
-          signBy: other
+          signBy: other,
+          roomId: cm.roomId
         });
       });
 

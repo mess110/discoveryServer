@@ -2,6 +2,7 @@ var express = require('express');
 var app = express();
 var server = require('http').createServer(app);
 var io = require('socket.io')(server);
+var packageJson = require('./package.json');
 
 class Nurse {
   constructor () {
@@ -85,5 +86,6 @@ io.on('connection', function (socket) {
 });
 
 let PORT = process.env.DS_PORT || 1337;
+console.log('discoveryServer v' + packageJson.version);
 console.log("Listening on port: " + PORT);
 server.listen(PORT);

@@ -16,38 +16,28 @@ app.get('/meta.json', function (req, res) {
 io.on('connection', function (socket) {
   // The newly connected socket is the signer
   for (let s of sockets) {
-    s.emit('addPeer', { initiator: s.id, signer: socket.id });
+    s.emit('addPeer', { initiator: s.id, signer: socket.id, signBy: 'initiator' });
   }
   sockets.push(socket);
 
-  socket.on('signSignal', function (data) {
-    var signer = undefined;
+  socket.on('sign', function (data) {
+    var target = undefined;
     for (let s of sockets) {
-      if (s.id === data.signer) {
-        signer = s;
+      if (s.id === data[data.signBy]) {
+        target = s;
       }
     }
-    if (signer === undefined) {
-      console.error('signer not found ' + data.signer);
+
+    if (target === undefined) {
+      console.error(data.signBy + ' not found ' + data[data.signBy]);
       return;
     }
 
-    signer.emit('signThis', data);
-  });
-
-  socket.on('finalSign', function (data) {
-    var initiator = undefined;
-    for (let s of sockets) {
-      if (s.id === data.initiator) {
-        initiator = s;
-      }
+    if (data.signBy === 'signer') {
+      target.emit('addPeer', data);
+    } else {
+      target.emit('establish', data);
     }
-    if (initiator === undefined) {
-      console.error('initiator not found ' + data.initiator);
-      return;
-    }
-
-    initiator.emit('finalSignThis', data);
   });
 
   socket.on('disconnect', function () {

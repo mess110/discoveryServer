@@ -20,52 +20,41 @@ class ConnectionManager {
     var cm = this;
 
     socket.on('connect', function() {
-      console.info('Connected. My socket id is: ' + socket.id);
+      console.info('Connected - ' + socket.id);
     });
 
     socket.on('addPeer', function (data) {
-      console.log("New peer: " + data.signer);
-      var peer = new SimplePeer({ initiator: true, trickle: false });
+      let signBy = data.signBy;
+      let initiator = signBy === 'initiator';
+      let other = initiator ? 'signer' : 'initiator';
+      console.info('Add new peer ' + data[other]);
+
+      var peer = new SimplePeer({ initiator: initiator, trickle: false });
       peer.cmKey = [data.initiator, data.signer].sort().join();
 
       peer.on('signal', function (signal) {
-        socket.emit('signSignal', { initiator: data.initiator, signer: data.signer, signal: signal });
+        socket.emit('sign', { initiator: data.initiator, signer: data.signer, signal: signal, signBy: other });
       });
 
       peer.on('connect', function () {
-        console.log('Connected to ' + peer.cmKey);
+        console.info('Connected to peer ' + peer.cmKey);
       });
 
       peer.on('data', function (stuff) {
         console.log('received data: ' + stuff);
       });
 
-      cm.peers.push(peer);
-    });
-
-    socket.on('signThis', function (data) {
-      console.log('Received signing');
-      var peer = new SimplePeer({ trickle: false });
-      peer.cmKey = [data.initiator, data.signer].sort().join();
-
-      peer.on('signal', function (signal) {
-        socket.emit('finalSign', { initiator: data.initiator, signer: data.signer, signal: signal });
-      })
-
-      peer.on('connect', function () {
-        console.log('Connected to ' + peer.cmKey);
-      });
-
-      peer.on('data', function (stuff) {
-        console.log('received data: ' + stuff);
+      peer.on('close', function () {
       });
 
       cm.peers.push(peer);
 
-      peer.signal(data.signal);
+      if (initiator === false) {
+        peer.signal(data.signal);
+      }
     });
 
-    socket.on('finalSignThis', function (data) {
+    socket.on('establish', function (data) {
       for (let peer of cm.peers) {
         let cmKey = [data.initiator, data.signer].sort().join();
         if (peer.cmKey === cmKey) {
@@ -76,6 +65,7 @@ class ConnectionManager {
 
     socket.on('removePeer', function (data) {
       let cmKey = [socket.id, data.id].sort().join();
+      console.info('Removing peer ' + cmKey);
       cm.peers = cm.peers.filter(function (peer) { return peer.cmKey != cmKey });
     });
 

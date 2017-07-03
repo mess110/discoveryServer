@@ -1,6 +1,10 @@
+var fs = require('fs');
 var express = require('express');
 var app = express();
-var server = require('http').createServer(app);
+var server = require('https').createServer({
+  key: fs.readFileSync('key.pem'),
+  cert: fs.readFileSync('cert.pem')
+}, app);
 var io = require('socket.io')(server);
 let packageJson = require('../package.json');
 let Nurse = require('./Nurse');

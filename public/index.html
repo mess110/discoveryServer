@@ -1,15 +1,34 @@
 <!doctype html>
 <html lang="en">
     <head>
+        <title>discoveryServer</title>
     </head>
     <body>
-        <h1>Hello World!</h1>
-        <div id="future"></div>
+        <h1 id="welcome">Hello World!</h1>
+        <a href="/rooms.json">/rooms.json</a>
+        <p id="output"></p>
+
         <script src="/discoveryClient.js"></script>
+
         <script>
-            var roomId = 'hello';
-            var cm = new discoveryClient.ConnectionManager(undefined, roomId);
+            var roomId = location.hash || 'default';
+            var cm = new discoveryClient.ConnectionManager(undefined, roomId, function (peer) {
+                peer.on('connect', function () {
+                  window.output.innerHTML += "peer connected<br />";
+                });
+                peer.on('data', function (stuff) {
+                  window.output.innerHTML += 'received data: ' + stuff + '<br />';
+                });
+                peer.on('stream', function (stuff) {
+                  console.log('received stream: ' + stuff);
+                });
+                peer.on('close', function () {
+                  window.output.innerHTML += 'peer disconnected<br />';
+                });
+            });
             cm.connect();
+
+            window.welcome.innerHTML = 'Room: ' + roomId;
         </script>
     </body>
 </html>

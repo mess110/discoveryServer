@@ -3,13 +3,32 @@ let io = require('socket.io-client');
 let SimplePeer = require('simple-peer');
 
 class ConnectionManager {
+
+  // Example usage:
+  //
+  // new discoveryClient.ConnectionManager(undefined, roomId, function (peer) {
+  //   peer.on('connect', function () {
+  //     console.info('Connected to peer ' + peer.cmKey);
+  //   });
+  //   peer.on('data', function (stuff) {
+  //     console.log('received data: ' + stuff);
+  //   });
+  //   peer.on('stream', function (stuff) {
+  //     console.log('received stream: ' + stuff);
+  //   });
+  //   peer.on('close', function () {
+  //   });
+  // });
+  //
+  //
   // url - of the discovery server
   // iceServers - [ { url: 'stun:stun.l.google.com:19302' } ]
-  constructor(url, roomId, iceServers, stream = false) {
+  constructor(url, roomId, addPeerCallback, iceServers, stream = false) {
     this.url = url;
     this.roomId = roomId;
     this.stream = stream;
     this.iceServers = iceServers;
+    this.addPeerCallback = addPeerCallback;
     this.peers = [];
   }
 
@@ -52,20 +71,9 @@ class ConnectionManager {
         });
       });
 
-      peer.on('connect', function () {
-        console.info('Connected to peer ' + peer.cmKey);
-      });
-
-      peer.on('data', function (stuff) {
-        console.log('received data: ' + stuff);
-      });
-
-      peer.on('stream', function (stuff) {
-        console.log('received data: ' + stuff);
-      });
-
-      peer.on('close', function () {
-      });
+      if (cm.addPeerCallback !== undefined) {
+        cm.addPeerCallback(peer)
+      }
 
       cm.peers.push(peer);
 

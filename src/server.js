@@ -8,7 +8,7 @@ var nurse = new Nurse();
 
 app.use(express.static(__dirname + '/../public'));
 
-app.get('/meta.json', function (req, res) {
+app.get('/rooms.json', function (req, res) {
   res.setHeader('Content-Type', 'application/json');
   res.send(nurse.toJson());
 });

@@ -70,7 +70,7 @@ function init() {
 
         var roomId = discoveryClient.getParameterByName('id') || 'conf-default';
 
-        cm = new discoveryClient.ConnectionManager(handlePeer);
+        cm = new discoveryClient.Mesh(handlePeer);
         cm.connect('/', roomId, stream);
 
         var pinger = new discoveryClient.Pinger(cm);

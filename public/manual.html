@@ -55,7 +55,7 @@ document.querySelector('form').addEventListener('submit', function (ev) {
     peer.signal(JSON.parse(document.querySelector('#incoming').value))
 })
 
-var cm = new discoveryClient.ConnectionManager(handlePeer);
+var cm = new discoveryClient.Mesh(handlePeer);
 var peer = cm.initPeer(location.hash !== '#1', printSignal);
         </script>
     </body>

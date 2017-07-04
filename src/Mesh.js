@@ -2,7 +2,7 @@ let io = require('socket.io-client');
 let SimplePeer = require('simple-peer');
 
 // Holds all the peer connections
-module.exports = class ConnectionManager {
+module.exports = class Mesh {
 
   constructor(handlePeerCallback, iceServers) {
     this.iceServers = iceServers;
@@ -22,7 +22,7 @@ module.exports = class ConnectionManager {
   // Initialize a peer.
   //
   // The peer can be an initiator and uses the iceServers provided
-  // in the ConnectionManager constructor.
+  // in the Mesh constructor.
   //
   // If stream is passed, the SimplePeer will stream the data
   initPeer (initiator, signalCallback, stream = false) {
@@ -69,7 +69,7 @@ module.exports = class ConnectionManager {
   //   });
   // }
   //
-  // var cm = new discoveryClient.ConnectionManager(handlePeer,
+  // var cm = new discoveryClient.Mesh(handlePeer,
   //   [ { url: 'stun:stun.l.google.com:19302' } ]);
   // cm.connect('/', 'room');
   //

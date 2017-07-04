@@ -1,7 +1,7 @@
 let io = require('socket.io-client');
 let SimplePeer = require('simple-peer');
 let Pinger = require('./src/Pinger');
-let ConnectionManager = require('./src/ConnectionManager');
+let Mesh = require('./src/Mesh');
 
 // https://stackoverflow.com/a/901144/642778
 // https://caniuse.com/#search=URLSearchParams
@@ -18,7 +18,7 @@ function getParameterByName(name, url) {
 module.exports = {
   io: io,
   SimplePeer: SimplePeer,
-  ConnectionManager: ConnectionManager,
+  Mesh: Mesh,
   Pinger: Pinger,
   getParameterByName: getParameterByName
 }

@@ -52,7 +52,7 @@ function init() {
     var roomId = discoveryClient.getParameterByName('id') || 'chat-default';
     window.welcome.innerHTML = 'Room: ' + roomId;
 
-    cm = new discoveryClient.ConnectionManager(handlePeer);
+    cm = new discoveryClient.Mesh(handlePeer);
     cm.connect('/', roomId);
 }
         </script>

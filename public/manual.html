@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <title>Manual connection</title>
+
+        <link rel="stylesheet" href="css/style.css" />
+    </head>
+    <body>
+        <h1>Manual connection</h1>
+
+        <a href="/manual.html" target="_blank">initiator</a>
+        <a href="/manual.html#1" target="_blank">receiver</a>
+
+        <p>Generated</p>
+        <textarea id="outgoing"></textarea>
+        <p>Received</p>
+        <form>
+            <textarea id="incoming"></textarea>
+            <br />
+            <button type="submit">signal</button>
+        </form>
+
+        <script src="js/discoveryClient.js"></script>
+        <script type="text/javascript" charset="utf-8">
+            var asd = {};
+
+function handlePeer(p) {
+    p.on('error', function (err) { console.log('error', err) })
+
+    p.on('connect', function () {
+        console.log('CONNECT')
+        p.send('whatever' + Math.random())
+    })
+
+    p.on('data', function (data) {
+        console.log('data: ' + data)
+    })
+
+    p.on('close', function () {
+        console.log('CLOSE');
+    });
+}
+
+function printSignal(signal) {
+    signalString = JSON.stringify(signal);
+    console.log('SIGNAL(' + signalString.length + ')', signalString)
+    document.querySelector('#outgoing').textContent = signalString
+}
+
+document.querySelector('form').addEventListener('submit', function (ev) {
+    ev.preventDefault()
+    peer.signal(JSON.parse(document.querySelector('#incoming').value))
+})
+
+var cm = new discoveryClient.ConnectionManager(handlePeer);
+var peer = cm.initPeer(location.hash !== '#1', printSignal);
+        </script>
+    </body>
+</html>

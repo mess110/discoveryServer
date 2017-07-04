@@ -12,3 +12,4 @@ npm start
 
 * add support for using a different ID than the socket.id
 * return number of participants in a room
+* peer to peer discovery

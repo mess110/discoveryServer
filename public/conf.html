@@ -1,44 +1,21 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
     <head>
         <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
         <title>video conf</title>
 
-        <style>
-            html, body {
-                width: 100%;
-                height: 100%;
-                margin: 0px;
-                overflow: hidden;
-            }
-
-            video {
-                background-color: #e9e9e9;
-                width: 25%;
-                border: 5px solid black;
-                margin: 5px;
-            }
-        </style>
+        <link rel="stylesheet" href="css/style.css" />
     </head>
     <body>
         <div id="container"></div>
-        <script src="discoveryClient.js"></script>
+        <script src="js/discoveryClient.js"></script>
 
         <script type="text/javascript" charset="utf-8">
-            var cm;
+            var cm;var pinger;
 
 document.addEventListener("DOMContentLoaded", init);
-
-function getParameterByName(name, url) {
-    if (!url) url = window.location.href;
-    name = name.replace(/[\[\]]/g, "\\$&");
-    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
-        results = regex.exec(url);
-    if (!results) return null;
-    if (!results[2]) return '';
-    return decodeURIComponent(results[2].replace(/\+/g, " "));
-}
 
 function init() {
     let container = document.getElementById('container');
@@ -61,6 +38,29 @@ function init() {
         return v;
     }
 
+    function handlePeer(peer) {
+        peer.on('connect', function () {
+            console.log('connect');
+            findOrCreateVideo(peer._id);
+        });
+        peer.on('stream', function (stuff) {
+            console.log('stream');
+            var v = findOrCreateVideo(peer._id);
+            v.src = window.URL.createObjectURL(stuff);
+            v.play();
+        });
+        peer.on('data', function (stuff) {
+            console.log(stuff);
+        });
+        peer.on('close', function () {
+            console.log('close');
+            var v = document.getElementById(peer._id);
+            if (v !== null) {
+                container.removeChild(v);
+            }
+        });
+    }
+
     function initRTC(stream) {
         var video = findOrCreateVideo('own');
         if (stream) {
@@ -68,28 +68,13 @@ function init() {
             video.play()
         }
 
-        var roomId = getParameterByName('id') || 'default';
+        var roomId = discoveryClient.getParameterByName('id') || 'conf-default';
 
-        cm = new discoveryClient.ConnectionManager(undefined, roomId, function (peer) {
-            peer.on('connect', function () {
-                console.log('connect');
-                findOrCreateVideo(peer._id);
-            });
-            peer.on('stream', function (stuff) {
-                console.log('stream');
-                var v = findOrCreateVideo(peer._id);
-                v.src = window.URL.createObjectURL(stuff);
-                v.play();
-            });
-            peer.on('close', function () {
-                console.log('close');
-                var v = document.getElementById(peer._id);
-                if (v !== null) {
-                    container.removeChild(v);
-                }
-            });
-        }, undefined, stream);
-        cm.connect();
+        cm = new discoveryClient.ConnectionManager(handlePeer);
+        cm.connect('/', roomId, stream);
+
+        var pinger = new discoveryClient.Pinger(cm);
+        pinger.start()
     }
 }
 </script>

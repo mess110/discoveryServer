@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <title>Chat</title>
+
+        <link rel="stylesheet" href="css/style.css" />
+    </head>
+    <body>
+        <h1>
+            Chat
+            <a href="/chat.html?id=chat-default">/chat.html?id=chat-default</a>
+        </h1>
+        <h2 id="welcome">discoveryServer</h2>
+        <input id="input" type="text" />
+        <a href="javascript: sendInput()">send</a>
+        <br />
+        <br />
+        <textarea id="outputTxt"></textarea>
+
+        <script src="js/discoveryClient.js"></script>
+
+        <script>
+            var cm;
+
+document.addEventListener("DOMContentLoaded", init);
+
+function output(s) {
+    window.outputTxt.textContent += s + '\n';
+}
+
+function sendInput() {
+    cm.emit(window.input.value);
+    output(window.input.value);
+    window.input.value = '';
+}
+
+function handlePeer(peer) {
+    peer.on('connect', function () {
+        output('peer connected');
+    });
+    peer.on('data', output);
+    peer.on('stream', output);
+    peer.on('close', function () {
+        output('peer disconnected');
+    });
+}
+
+function init() {
+    var roomId = discoveryClient.getParameterByName('id') || 'chat-default';
+    window.welcome.innerHTML = 'Room: ' + roomId;
+
+    cm = new discoveryClient.ConnectionManager(handlePeer);
+    cm.connect('/', roomId);
+}
+        </script>
+    </body>
+</html>

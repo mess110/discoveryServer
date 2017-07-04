@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node src/server.js",
     "server": "node src/server.js",
-    "browserify": "./node_modules/.bin/browserify index.js --standalone discoveryClient > public/discoveryClient.js",
+    "browserify": "./node_modules/.bin/browserify index.js --standalone discoveryClient > public/js/discoveryClient.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",

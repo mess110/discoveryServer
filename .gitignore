@@ -1,4 +1,4 @@
 node_modules/
-public/discoveryClient.js
+public/js/discoveryClient.js
 discoveryServer.log
 *.pem

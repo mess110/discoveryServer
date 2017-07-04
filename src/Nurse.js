@@ -1,3 +1,4 @@
+// Responsible for handling which sockets are in a room
 module.exports = class Nurse {
   constructor () {
     this.rooms = {}

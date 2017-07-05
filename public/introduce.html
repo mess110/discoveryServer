@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <title>Introduce</title>
+
+        <link rel="stylesheet" href="css/style.css" />
+    </head>
+    <body>
+        <h1>Introduce</h1>
+        <h2 id="welcome">discoveryServer</h2>
+        <p>
+            <a href="/introduce.html" target="_blank">peer1</a>
+            <a href="/introduce.html?initiator=false" target="_blank">peer2</a>
+        </p>
+        <p>Generated</p>
+        <textarea id="outgoing"></textarea>
+        <p>Received</p>
+        <form>
+            <textarea id="incoming"></textarea>
+            <br />
+            <button type="submit">signal</button>
+        </form>
+        <p id="foo"></p>
+        <a href="javascript: newConnection()">new connection</a>
+
+        <script src="js/discoveryClient.js"></script>
+
+        <script>
+            var cm;var thePeer;
+
+document.addEventListener("DOMContentLoaded", init);
+
+function output(s) {
+    console.log(s);
+}
+
+function special(s, parentPeer) {
+    let data = JSON.parse(s);
+    if (data.type == 'introduce') {
+        if (data.status === 4) {
+            for (let p of cm.peers) {
+                if (p.initiatorChannelName === data.initiator) {
+                    p.signal(data.signal);
+                }
+            }
+        }
+        if (data.status === 3) {
+            data.status = 4;
+            cm.send(data, data.initiator);
+        }
+        if (data.status === 2) {
+            // signal received from initiator, need to sign it
+            var p = cm.initPeer(false, function (signal) {
+                data.status = 3;
+                data.signal = signal;
+                cm.send(data, parentPeer);
+            }); // TODO handle stream
+            p.signal(data.signal);
+        }
+        if (data.status === 1) {
+            // relay the payload from initiator to the new peer
+            data.status = 2
+            cm.send(data, data.signer);
+        }
+        if (data.status === 0) {
+            // a peer received instructions to send data for initiating another peer
+            var p = cm.initPeer(true, function (signal) {
+                data.status = 1;
+                data.signal = signal;
+                cm.send(data, parentPeer)
+            // used to identify the peer when last signing happens and no channel
+            // name exists
+            }); // TODO handle stream
+            p.initiatorChannelName = data.initiator;
+        }
+    }
+}
+
+function handlePeer(p) {
+    p.on('connect', function () {
+        output('peer connected');
+        window.welcome.innerHTML = 'Peers: ' + cm.peers.length;
+    });
+    p.on('data', function (data) {
+        special(data, p);
+    });
+    p.on('stream', output);
+    p.on('error', output);
+    p.on('close', function () {
+        output('peer disconnected');
+    });
+}
+
+function printSignal(signal) {
+    signalString = JSON.stringify(signal);
+    console.log('SIGNAL(' + signalString.length + ')', signalString)
+    document.querySelector('#outgoing').textContent = signalString
+}
+
+function newConnection() {
+    thePeer = cm.initPeer(true, printSignal);
+    return thePeer;
+}
+
+function init() {
+    window.welcome.innerHTML = 'Peers: 0';
+
+    document.querySelector('form').addEventListener('submit', function (ev) {
+        ev.preventDefault()
+        thePeer.signal(JSON.parse(document.querySelector('#incoming').value))
+    })
+
+    let initiator = discoveryClient.getParameterByName('initiator') !== 'false';
+    cm = new discoveryClient.Mesh(handlePeer);
+    thePeer = cm.initPeer(initiator, printSignal);
+}
+        </script>
+    </body>
+</html>

@@ -24,7 +24,10 @@ module.exports = class Pinger {
         if (pinger.running === false) {
           return;
         }
-        pinger.connectionManager.emit({ ping: new Date().getTime() });
+        pinger.connectionManager.emit({
+          type: 'ping',
+          ping: new Date().getTime()
+        });
         pinger.tick(interval);
       }, interval)
     }).call(pinger);

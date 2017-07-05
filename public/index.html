@@ -26,6 +26,8 @@
     peer.on('stream', function (data) {
       console.log('received stream: ' + data);
     });
+    peer.on('error', function (error) {
+    });
     peer.on('close', function () {
     });
   }
@@ -46,6 +48,9 @@
         </p>
         <p>
             <a href="/conf.html">Video/Audio Stream</a>
+        </p>
+        <p>
+            <a href="/introduce.html">WIP - Introduce peer to the Mesh</a>
         </p>
     </body>
 </html>

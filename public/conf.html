@@ -43,13 +43,16 @@ function init() {
             console.log('connect');
             findOrCreateVideo(peer._id);
         });
+        peer.on('data', function (stuff) {
+            console.log(stuff);
+        });
         peer.on('stream', function (stuff) {
             console.log('stream');
             var v = findOrCreateVideo(peer._id);
             v.src = window.URL.createObjectURL(stuff);
             v.play();
         });
-        peer.on('data', function (stuff) {
+        peer.on('error', function (stuff) {
             console.log(stuff);
         });
         peer.on('close', function () {

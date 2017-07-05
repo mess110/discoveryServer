@@ -27,20 +27,20 @@
         <script type="text/javascript" charset="utf-8">
             var asd = {};
 
+function output(s) {
+    console.log(s);
+}
+
 function handlePeer(p) {
-    p.on('error', function (err) { console.log('error', err) })
-
     p.on('connect', function () {
-        console.log('CONNECT')
-        p.send('whatever' + Math.random())
+        output('peer connected');
+        p.send('whatever' + Math.random());
     })
-
-    p.on('data', function (data) {
-        console.log('data: ' + data)
-    })
-
+    p.on('data', output);
+    p.on('stream', output);
+    p.on('error', output);
     p.on('close', function () {
-        console.log('CLOSE');
+        output(s);
     });
 }
 
@@ -56,6 +56,7 @@ document.querySelector('form').addEventListener('submit', function (ev) {
 })
 
 var cm = new discoveryClient.Mesh(handlePeer);
+// todo use getParameterByName
 var peer = cm.initPeer(location.hash !== '#1', printSignal);
         </script>
     </body>

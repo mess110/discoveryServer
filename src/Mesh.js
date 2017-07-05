@@ -14,9 +14,34 @@ module.exports = class Mesh {
   emit(data) {
     for (let peer of this.peers) {
       if (peer.connected) {
-        peer.send(data);
+        this.send(data, peer);
       }
     }
+  }
+
+  // Send data to one peer. Takes care of formatting
+  send(data, peer) {
+    if (data instanceof Object) {
+      data = JSON.stringify(data);
+    }
+    if (!(typeof data == 'string' || data instanceof String)) {
+      data = data.toString();
+    }
+
+    var target = peer;
+    if (typeof peer === 'string' || peer instanceof String) {
+      target = this.findPeerByChannelName(peer)
+    }
+    target.send(data);
+  }
+
+  findPeerByChannelName (channelName) {
+    for (let peer of this.peers) {
+      if (peer.channelName === channelName) {
+        return peer;
+      }
+    }
+    throw new Error('peer from channelName ' + channelName + ' not found');
   }
 
   // Initialize a peer.
@@ -44,6 +69,29 @@ module.exports = class Mesh {
     return peer;
   }
 
+  // Introduces a peer to all the other peers and acts as a discoveryServer
+  // The old peer acts as an initiator
+  //
+  // WIP
+  introduce (peer) {
+    if (peer.connected !== true) {
+      throw new Error('introduce: peer (' + peer._id + ') is not connected');
+    }
+    // TODO: make sure both peers connected
+    // TODO: make sure channel exists for both peers
+
+    for (let p of this.peers) {
+      if (p.connected && p._id !== peer._id) {
+        this.send({
+          type: 'introduce',
+          initiator: p.channelName,
+          signer: peer.channelName,
+          status: 0,
+        }, p);
+      }
+    }
+  }
+
   // Connect to a discoveryServer endpoint in a specific room
   //
   // When joining, a socket connection is created. This socket connection
@@ -64,6 +112,8 @@ module.exports = class Mesh {
   //   });
   //   peer.on('stream', function (data) {
   //     console.log('received stream: ' + data);
+  //   });
+  //   peer.on('error', function (error) {
   //   });
   //   peer.on('close', function () {
   //   });

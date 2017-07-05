@@ -43,6 +43,7 @@ function handlePeer(peer) {
     });
     peer.on('data', output);
     peer.on('stream', output);
+    peer.on('error', output);
     peer.on('close', function () {
         output('peer disconnected');
     });

@@ -3,10 +3,13 @@ FROM node:8
 WORKDIR /usr/src/app
 
 COPY package*.json ./
+
 RUN npm install
+
 COPY . .
 
-EXPOSE 1337
+RUN npm run browserify
+
 EXPOSE 443
 
-CMD [ "npm", "start" ]
+CMD ["npm", "start"]

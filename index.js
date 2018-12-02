@@ -15,10 +15,22 @@ function getParameterByName(name, url) {
     return decodeURIComponent(results[2].replace(/\+/g, " "));
 }
 
+// Parse data and format it nicely as json
+function parse(socket, peer, data) {
+    var string = new TextDecoder("utf-8").decode(data)
+    var json = JSON.parse(string)
+    var from = peer.cmKey.split(',')
+    from.remove(socket.id)
+    json.from = from.first()
+    json.cmKey = peer.cmKey
+    return json
+}
+
 module.exports = {
-  io: io,
-  SimplePeer: SimplePeer,
-  Mesh: Mesh,
-  Pinger: Pinger,
-  getParameterByName: getParameterByName
+    io: io,
+    SimplePeer: SimplePeer,
+    Mesh: Mesh,
+    Pinger: Pinger,
+    getParameterByName: getParameterByName,
+    parse: parse
 }

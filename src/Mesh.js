@@ -123,13 +123,18 @@ module.exports = class Mesh {
   //   [ { url: 'stun:stun.l.google.com:19302' } ]);
   // cm.connect('/', 'room');
   //
-  connect (url, roomId, stream = false) {
+  connect (url, roomId, stream = false, cCallback = function () {}, dcCallback = function () {}) {
     var socket = io.connect(url);
     var cm = this;
 
     socket.on('connect', function() {
       console.info('Connected - ' + socket.id);
+      cCallback()
       socket.emit('joinRoom', { roomId: roomId })
+    });
+
+    socket.on('disconnect', function() {
+      dcCallback()
     });
 
     socket.on('addPeer', function (data) {

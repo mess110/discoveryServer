@@ -7,6 +7,7 @@
         <title>video conf</title>
 
         <link rel="stylesheet" href="css/style.css" />
+        <link rel="stylesheet" href="css/confstyle.css" />
     </head>
     <body>
         <div id="container"></div>
@@ -14,6 +15,8 @@
 
         <script type="text/javascript" charset="utf-8">
             var cm;var pinger;
+var classes = ["one","two","three","four","five","six","seven","eight"];
+var clients = 1;
 
 document.addEventListener("DOMContentLoaded", init);
 
@@ -28,12 +31,19 @@ function init() {
     });
 
     function findOrCreateVideo(id) {
+        let container = document.getElementById('container');
+        container.className = classes[clients-1];
+
         var v = document.getElementById(id);
         if (v === null) {
+            var item = document.createElement("div");
+            item.className = "item";
             v = document.createElement('video');
             v.setAttribute('id', id);
-            v.setAttribute('class', 'item');
-            container.appendChild(v);
+            v.setAttribute('class', 'video-item');
+            item.appendChild(v);
+            container.appendChild(item);
+            clients++;
         }
         return v;
     }
@@ -59,7 +69,8 @@ function init() {
             console.log('close');
             var v = document.getElementById(peer._id);
             if (v !== null) {
-                container.removeChild(v);
+                container.removeChild(v.parentElement);
+                clients--;
             }
         });
     }

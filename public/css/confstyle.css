@@ -1,0 +1,50 @@
+body
+{
+    margin : 0px;
+    width: 100vw;
+    height: 100vh;
+}
+
+#container
+{
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: center;
+}
+
+
+.item video
+{
+    width:100%;
+    margin:0px;
+    border:0px;
+}
+
+.one .item
+{
+    height: 100%;
+    width:100%;
+}
+
+.two .item
+{
+    width: 50%;
+    height: 100%;
+} 
+.three .item, .four .item
+{
+    width:50%;
+    height: 50%;
+}
+
+.five .item,.six .item
+{
+    width:33.33%;
+    height: 50%;
+}
+
+.seven .item,.eight .item
+{
+    width:25%;
+    height: 50%;
+}

@@ -69,7 +69,7 @@ function init() {
         });
         peer.on('close', function () {
             console.log('close');
-            var v = document.getElementById(peer._id);
+            var v = document.getElementById(`video-${peer._id}`);
             if (v !== null) {
                 container.removeChild(v.parentElement);
                 clients--;

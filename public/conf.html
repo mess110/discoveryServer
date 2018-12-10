@@ -42,10 +42,7 @@ function init() {
             v = document.createElement('video');
             v.setAttribute('id', fullId);
             v.setAttribute('class', 'video-item');
-            if(id == 'own')
-            {
-                v.setAttribute("muted",'');
-            }
+            v.muted = id == 'own';
             item.appendChild(v);
             container.appendChild(item);
             clients++;

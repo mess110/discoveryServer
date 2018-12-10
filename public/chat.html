@@ -55,6 +55,9 @@ function init() {
 
     cm = new discoveryClient.Mesh(handlePeer);
     cm.connect('/', roomId);
+
+    var pinger = new discoveryClient.Pinger(cm);
+    pinger.start()
 }
         </script>
     </body>

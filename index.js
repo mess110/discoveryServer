@@ -19,7 +19,7 @@ function getParameterByName(name, url) {
 function parse(socket, peer, data) {
     let string = data instanceof Uint8Array ? new TextDecoder("utf-8").decode(data) : data
     let json = JSON.parse(string)
-    let from = peer.cmKey.split(',')
+    let from = peer.cmKey.split(Mesh.CM_KEY_SPLIT_CHAR)
     from.remove(socket.id)
     json.from = from.first()
     json.cmKey = peer.cmKey

@@ -2,7 +2,7 @@ let io = require('socket.io-client');
 let SimplePeer = require('simple-peer');
 
 // Holds all the peer connections
-module.exports = class Mesh {
+class Mesh {
 
   constructor(handlePeerCallback, iceServers) {
     this.iceServers = iceServers;
@@ -153,7 +153,7 @@ module.exports = class Mesh {
         });
       }, stream)
 
-      peer.cmKey = [data.initiator, data.signer].sort().join();
+      peer.cmKey = [data.initiator, data.signer].sort().join(Mesh.CM_KEY_SPLIT_CHAR);
 
       if (initiator === false) {
         peer.signal(data.signal);
@@ -162,7 +162,7 @@ module.exports = class Mesh {
 
     socket.on('seal', function (data) {
       for (let peer of cm.peers) {
-        let cmKey = [data.initiator, data.signer].sort().join();
+        let cmKey = [data.initiator, data.signer].sort().join(Mesh.CM_KEY_SPLIT_CHAR);
         if (peer.cmKey === cmKey) {
           peer.signal(data.signal);
         }
@@ -170,7 +170,7 @@ module.exports = class Mesh {
     });
 
     socket.on('removePeer', function (data) {
-      let cmKey = [socket.id, data.id].sort().join();
+      let cmKey = [socket.id, data.id].sort().join(Mesh.CM_KEY_SPLIT_CHAR);
       console.info('Removing peer ' + cmKey);
       cm.peers = cm.peers.filter(function (peer) { return peer.cmKey != cmKey });
     });
@@ -179,3 +179,6 @@ module.exports = class Mesh {
   }
 }
 
+Mesh.CM_KEY_SPLIT_CHAR = '_'
+
+module.exports = Mesh

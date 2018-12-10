@@ -83,7 +83,8 @@ function init() {
     function initRTC(stream) {
         var video = findOrCreateVideo('own');
         if (stream) {
-            video.src = window.URL.createObjectURL(stream)
+            video.srcObject = stream;
+            //video.src = window.URL.createObjectURL(stream)
             video.play()
         }
 

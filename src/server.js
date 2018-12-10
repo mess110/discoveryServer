@@ -55,8 +55,13 @@ io.on('connection', function (socket) {
   socket.on('disconnect', function () {
     let result = nurse.removeSocket(socket);
     for (let roomKey of result.rooms) {
-      for (let s of nurse.getSockets(roomKey)) {
-        s.emit('removePeer', { id: result.id });
+      let otherSockets = nurse.getSockets(roomKey)
+      if (otherSockets.length == 0) {
+        delete nurse.rooms[roomKey]
+      } else {
+        for (let s of otherSockets) {
+          s.emit('removePeer', { id: result.id });
+        }
       }
     }
   });

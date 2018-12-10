@@ -29,9 +29,6 @@ module.exports = class Nurse {
 
     for (let roomKey of result.rooms) {
       this.rooms[roomKey] = this.rooms[roomKey].filter((e) => { return e.id !== result.id })
-      if (this.rooms[roomKey].length == 0) {
-        this.rooms[roomKey] = undefined
-      }
     }
 
     return result

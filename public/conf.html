@@ -34,12 +34,13 @@ function init() {
         let container = document.getElementById('container');
         container.className = classes[clients-1];
 
-        var v = document.getElementById(id);
+        let fullId = `video-${id}`
+        var v = document.getElementById(fullId);
         if (v === null) {
             var item = document.createElement("div");
             item.className = "item";
             v = document.createElement('video');
-            v.setAttribute('id', id);
+            v.setAttribute('id', fullId);
             v.setAttribute('class', 'video-item');
             if(id == 'own')
             {

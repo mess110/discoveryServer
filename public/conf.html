@@ -64,7 +64,7 @@ function init() {
         peer.on('stream', function (stuff) {
             console.log('stream');
             var v = findOrCreateVideo(peer._id);
-            v.src = window.URL.createObjectURL(stuff);
+            v.srcObject = stuff;
             v.play();
         });
         peer.on('error', function (stuff) {

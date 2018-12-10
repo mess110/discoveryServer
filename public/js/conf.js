@@ -1,9 +1,10 @@
 var cm;
-var pinger;
 var classes = ["one","two","three","four","five","six","seven","eight"];
 var clients = 1;
 
-document.addEventListener("DOMContentLoaded", init);
+function getFullId(id) {
+  return `video-${id}`
+}
 
 function init() {
   let container = document.getElementById('container');
@@ -14,10 +15,6 @@ function init() {
     console.log(err)
     initRTC(false);
   });
-
-  function getFullId(id) {
-    return `video-${id}`
-  }
 
   function findOrCreateVideo(id) {
     let container = document.getElementById('container');
@@ -43,17 +40,17 @@ function init() {
       console.log('connect');
       findOrCreateVideo(peer._id);
     });
-    peer.on('data', function (stuff) {
-      console.log(stuff);
+    peer.on('data', function (data) {
+      console.log(data);
     });
-    peer.on('stream', function (stuff) {
+    peer.on('stream', function (stream) {
       console.log('stream');
       var v = findOrCreateVideo(peer._id);
-      v.srcObject = stuff;
+      v.srcObject = stream;
       v.play();
     });
-    peer.on('error', function (stuff) {
-      console.log(stuff);
+    peer.on('error', function (error) {
+      console.error(error);
     });
     peer.on('close', function () {
       console.log('close');
@@ -82,3 +79,5 @@ function init() {
     cm.connect('/', roomId, stream);
   }
 }
+
+document.addEventListener("DOMContentLoaded", init);

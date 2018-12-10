@@ -2,8 +2,8 @@ var fs = require('fs');
 var express = require('express');
 var app = express();
 var server = require('https').createServer({
-  key: fs.readFileSync('key.pem'),
-  cert: fs.readFileSync('cert.pem')
+  key: fs.readFileSync(process.env.DS_KEY || 'key.pem'),
+  cert: fs.readFileSync(process.env.DS_CERT || 'cert.pem')
 }, app);
 var io = require('socket.io')(server);
 let packageJson = require('../package.json');

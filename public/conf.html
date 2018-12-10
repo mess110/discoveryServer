@@ -84,7 +84,7 @@ function init() {
 
         var roomId = discoveryClient.getParameterByName('id') || 'conf-default';
 
-        cm = new discoveryClient.Mesh(handlePeer);
+        cm = new discoveryClient.Mesh(handlePeer, [{ url: 'stun:stun.l.google.com:19302' }]);
         cm.connect('/', roomId, stream);
 
         var pinger = new discoveryClient.Pinger(cm);

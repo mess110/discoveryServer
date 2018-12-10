@@ -30,17 +30,20 @@ function init() {
         initRTC(false);
     });
 
+    function getFullId(id) {
+        return `video-${id}`
+    }
+
     function findOrCreateVideo(id) {
         let container = document.getElementById('container');
         container.className = classes[clients-1];
 
-        let fullId = `video-${id}`
-        var v = document.getElementById(fullId);
+        var v = document.getElementById(getFullId(id));
         if (v === null) {
             var item = document.createElement("div");
             item.className = "item";
             v = document.createElement('video');
-            v.setAttribute('id', fullId);
+            v.setAttribute('id', getFullId(id));
             v.setAttribute('class', 'video-item');
             v.muted = id == 'own';
             item.appendChild(v);
@@ -69,7 +72,7 @@ function init() {
         });
         peer.on('close', function () {
             console.log('close');
-            var v = document.getElementById(`video-${peer._id}`);
+            var v = document.getElementById(getFullId(peer._id));
             if (v !== null) {
                 container.removeChild(v.parentElement);
                 clients--;
@@ -81,7 +84,6 @@ function init() {
         var video = findOrCreateVideo('own');
         if (stream) {
             video.srcObject = stream;
-            //video.src = window.URL.createObjectURL(stream)
             video.play()
         }
 

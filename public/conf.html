@@ -88,7 +88,11 @@ function init() {
 
         var roomId = discoveryClient.getParameterByName('id') || 'conf-default';
 
-        cm = new discoveryClient.Mesh(handlePeer, [{ url: 'stun:stun.l.google.com:19302' }]);
+        let iceServers = [
+            { urls: 'stun:stun.l.google.com:19302' },
+            { urls: 'stun:global.stun.twilio.com:3478?transport=udp' }
+        ]
+        cm = new discoveryClient.Mesh(handlePeer, iceServers);
         cm.connect('/', roomId, stream);
 
         var pinger = new discoveryClient.Pinger(cm);

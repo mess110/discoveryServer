@@ -5,12 +5,12 @@ module.exports = class Nurse {
   }
 
   getSockets (roomId) {
-    this.defaultRoom(roomId);
-    return this.rooms[roomId];
+    this.defaultRoom(roomId)
+    return this.rooms[roomId]
   }
 
   addSocket (socket, roomId) {
-    this.defaultRoom(roomId);
+    this.defaultRoom(roomId)
     this.rooms[roomId].push(socket)
   }
 
@@ -18,20 +18,23 @@ module.exports = class Nurse {
     var result = {
       id: socket.id,
       rooms: []
-    };
+    }
     for (let roomKey in this.rooms) {
       for (let s of this.getSockets(roomKey)) {
         if (socket.id === s.id) {
-          result.rooms.push(roomKey);
+          result.rooms.push(roomKey)
         }
       }
     }
 
     for (let roomKey of result.rooms) {
-      this.rooms[roomKey] = this.rooms[roomKey].filter(function (e) { return e.id !== result.id })
+      this.rooms[roomKey] = this.rooms[roomKey].filter((e) => { return e.id !== result.id })
+      if (this.rooms[roomKey].length == 0) {
+        this.rooms[roomKey] = undefined
+      }
     }
 
-    return result;
+    return result
   }
 
   defaultRoom (roomId) {
@@ -45,6 +48,6 @@ module.exports = class Nurse {
     for (let roomKey in this.rooms) {
       result[roomKey] = this.getSockets(roomKey).map(function (e) { return e.id })
     }
-    return result;
+    return result
   }
 }

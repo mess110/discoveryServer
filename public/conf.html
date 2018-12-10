@@ -41,6 +41,10 @@ function init() {
             v = document.createElement('video');
             v.setAttribute('id', id);
             v.setAttribute('class', 'video-item');
+            if(id == 'own')
+            {
+                v.setAttribute("muted",'');
+            }
             item.appendChild(v);
             container.appendChild(item);
             clients++;

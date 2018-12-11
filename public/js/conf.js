@@ -29,7 +29,7 @@ function getRoomUrl(id) {
 function init() {
   var container = document.getElementById('container')
   var classes = ["one", "two", "three", "four", "five", "six", "seven", "eight"]
-  var clients = 1
+  var clients = 0
   var iceServers = [
     { urls: 'stun:stun.l.google.com:19302' },
     { urls: 'stun:global.stun.twilio.com:3478?transport=udp' }

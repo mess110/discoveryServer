@@ -73,9 +73,18 @@ function init() {
     return `video-${id}`
   }
 
-  function findOrCreateVideo(id) {
+  function clientsChange(step)
+  {
+    clients +=step;
+    if (clients > classes.length-1)
+    {
+      console.error("Styling not supported")
+      return
+    }
+    
     container.className = classes[clients-1]
-
+  }
+  function findOrCreateVideo(id) {
     let v = document.getElementById(getFullId(id))
     if (v === null) {
       let item = document.createElement("div")
@@ -86,7 +95,7 @@ function init() {
       v.muted = id == 'own'
       item.appendChild(v)
       container.appendChild(item)
-      clients++
+      clientsChange(1)
     }
     return v
   }
@@ -111,7 +120,7 @@ function init() {
       let v = document.getElementById(getFullId(peer._id))
       if (v !== null) {
         container.removeChild(v.parentElement)
-        clients--
+        clientsChange(-1)
       }
     })
   }

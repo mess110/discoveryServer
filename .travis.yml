@@ -1,0 +1,5 @@
+deploy:
+  provider: script
+  script: bash doc/deploy.sh
+  on:
+    branch: master

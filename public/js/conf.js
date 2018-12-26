@@ -56,11 +56,36 @@ function init() {
   function initHardware(options) {
     console.log(options)
     navigator.mediaDevices.getUserMedia(options).then((stream) => {
+      initMuteButton(stream)
       initRTC(stream)
     }).catch((error) => {
       console.error(error)
       initRTC(false)
     })
+  }
+
+  function initMuteButton(stream)
+  {
+    let micControl = document.getElementById("mic-control")
+    micControl.style.display=""
+    micControl.onclick = function() {
+      var tracks = stream.getTracks().filter(track=> {
+        return track.kind == "audio"
+      });
+      var micTrack = tracks[0];
+      if ( micTrack.enabled)
+      {
+        micControl.firstChild.classList.remove("fa-microphone")
+        micControl.firstChild.classList.add("fa-microphone-slash")
+        micTrack.enabled=false
+      }
+      else
+      {
+        micControl.firstChild.classList.remove("fa-microphone-slash")
+        micControl.firstChild.classList.add("fa-microphone")
+        micTrack.enabled=true
+      }
+    }
   }
 
   function initRTC(stream) {

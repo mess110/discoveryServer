@@ -97,3 +97,17 @@ Prefer vertical screen splitting
     background-color: white;
     text-align: right;
 }
+
+.controls{
+    position: absolute;
+    left: 0px;
+    top: 45vh;
+    background-color: white;
+    font-size: 30px;
+    width:60px;
+    text-align:center;
+}
+.controls i
+{
+    margin:10px;
+}

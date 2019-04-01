@@ -4,9 +4,10 @@ let SimplePeer = require('simple-peer');
 // Holds all the peer connections
 class Mesh {
 
-  constructor(handlePeerCallback, iceServers) {
+  constructor(handlePeerCallback, iceServers, context) {
     this.iceServers = iceServers;
     this.handlePeerCallback = handlePeerCallback;
+    this.context = context
     this.peers = [];
   }
 
@@ -65,7 +66,7 @@ class Mesh {
     });
 
     if (this.handlePeerCallback !== undefined) {
-      this.handlePeerCallback(peer)
+      this.handlePeerCallback(peer, this.context)
     }
 
     peer.on('signal', signalCallback);
